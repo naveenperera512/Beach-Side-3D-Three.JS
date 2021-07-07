@@ -6,7 +6,7 @@ import waterVertexShader from './shaders/water/vertex.glsl'
 import waterFragmentShader from './shaders/water/fragment.glsl'
 
 /**
- * Base
+ * Basex
  */
 // Debug
 const gui = new dat.GUI({ width: 340 })
