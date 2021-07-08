@@ -1,12 +1,13 @@
 import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import * as dat from 'dat.gui'
 import waterVertexShader from './shaders/water/vertex.glsl'
 import waterFragmentShader from './shaders/water/fragment.glsl'
 
 /**
- * Basex
+ * Base
  */
 // Debug
 const gui = new dat.GUI({ width: 340 })
@@ -18,11 +19,35 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 
+const gltfLoader = new GLTFLoader()
+
 /**
  * Water
  */
 // Geometry
-const waterGeometry = new THREE.PlaneGeometry(2, 2, 512, 512)
+const waterGeometry = new THREE.PlaneGeometry(3, 5, 512, 512)
+
+//Ship Model
+let ship = null
+
+gltfLoader.load(
+    '/models/ship/scene.gltf',
+    (gltf) =>
+    {
+        ship = gltf
+        gltf.scene.scale.set(0.0025, 0.0025, 0.0025)
+        gltf.scene.rotation.y = -0.8
+        gltf.scene.position.z = -1.5
+        scene.add(gltf.scene)   
+    }
+)
+
+const geometry = new THREE.CircleGeometry (1, 32 );
+const material = new THREE.MeshBasicMaterial( { color: '#FB8F03' } )
+const mesh = new THREE.Mesh( geometry, material );
+mesh.position.y = 10
+mesh.position.z = -35
+scene.add( mesh );
 
 // Colors
 debugObject.depthColor = '#186691'
@@ -39,19 +64,19 @@ const waterMaterial = new THREE.ShaderMaterial({
     {
         uTime: { value: 0 },
         
-        uBigWavesElevation: { value: 0.2 },
-        uBigWavesFrequency: { value: new THREE.Vector2(4, 1.5) },
+        uBigWavesElevation: { value: 0.083 },
+        uBigWavesFrequency: { value: new THREE.Vector2(2.449, 3.296) },
         uBigWavesSpeed: { value: 0.75 },
 
-        uSmallWavesElevation: { value: 0.15 },
-        uSmallWavesFrequency: { value: 3 },
+        uSmallWavesElevation: { value: 0.176 },
+        uSmallWavesFrequency: { value: 3.2 },
         uSmallWavesSpeed: { value: 0.2 },
         uSmallIterations: { value: 4 },
 
         uDepthColor: { value: new THREE.Color(debugObject.depthColor) },
         uSurfaceColor: { value: new THREE.Color(debugObject.surfaceColor) },
-        uColorOffset: { value: 0.08 },
-        uColorMultiplier: { value: 5 }
+        uColorOffset: { value: 0.091 },
+        uColorMultiplier: { value: 5.76 }
     }
 })
 
@@ -72,7 +97,23 @@ gui.add(waterMaterial.uniforms.uColorMultiplier, 'value').min(0).max(10).step(0.
 // Mesh
 const water = new THREE.Mesh(waterGeometry, waterMaterial)
 water.rotation.x = - Math.PI * 0.5
+water.rotation.z = - Math.PI * 0.25
+water.position.y = - 0.5
+water.position.x = - 1
+water.position.z = - 1
 scene.add(water)
+
+//light
+const directionalLight = new THREE.PointLight(0xffffff, 4.5)
+directionalLight.castShadow = true
+directionalLight.shadow.mapSize.set(1024, 1024)
+directionalLight.shadow.camera.far = 60
+directionalLight.shadow.camera.left = -10
+directionalLight.shadow.camera.top = 10
+directionalLight.shadow.camera.right = 10
+directionalLight.shadow.camera.bottom = -10
+directionalLight.position.set(0, 10, 35)
+scene.add(directionalLight)
 
 /**
  * Sizes
@@ -117,7 +158,8 @@ const renderer = new THREE.WebGLRenderer({
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-
+debugObject.clearColor = '#121C24'
+renderer.setClearColor(debugObject.clearColor)
 /**
  * Animate
  */
@@ -126,6 +168,13 @@ const clock = new THREE.Clock()
 const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
+
+    // if (ship) {
+    //     ship.scene.position.x -= 0.1;
+    //     if (ship.scene.position.x < 14){
+    //         ship.scene.position.x = 17
+    //     }
+    // }
 
     // Water
     waterMaterial.uniforms.uTime.value = elapsedTime
