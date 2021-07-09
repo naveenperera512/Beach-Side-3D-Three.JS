@@ -25,7 +25,7 @@ const gltfLoader = new GLTFLoader()
  * Water
  */
 // Geometry
-const waterGeometry = new THREE.PlaneGeometry(3, 5, 512, 512)
+const waterGeometry = new THREE.PlaneGeometry(35, 20, 512, 512)
 
 //Ship Model
 let ship = null
@@ -35,19 +35,19 @@ gltfLoader.load(
     (gltf) =>
     {
         ship = gltf
-        gltf.scene.scale.set(0.0025, 0.0025, 0.0025)
-        gltf.scene.rotation.y = -0.8
-        gltf.scene.position.z = -1.5
+        gltf.scene.scale.set(0.02, 0.02, 0.02)
+        gltf.scene.position.z = -6
+        gltf.scene.position.x = 12
+        gltf.scene.rotation.y = -1.6
         scene.add(gltf.scene)   
     }
 )
 
-const geometry = new THREE.CircleGeometry (1, 32 );
-const material = new THREE.MeshBasicMaterial( { color: '#FB8F03' } )
-const mesh = new THREE.Mesh( geometry, material );
-mesh.position.y = 10
-mesh.position.z = -35
-scene.add( mesh );
+//Sun Light
+// const geometry = new THREE.CircleGeometry (1, 32 );
+// const material = new THREE.MeshBasicMaterial( { color: '#FB8F03' } )
+// const mesh = new THREE.Mesh( geometry, material );
+// scene.add( mesh );
 
 // Colors
 debugObject.depthColor = '#186691'
@@ -65,7 +65,7 @@ const waterMaterial = new THREE.ShaderMaterial({
         uTime: { value: 0 },
         
         uBigWavesElevation: { value: 0.083 },
-        uBigWavesFrequency: { value: new THREE.Vector2(2.449, 3.296) },
+        uBigWavesFrequency: { value: new THREE.Vector2(1.318, 2.526) },
         uBigWavesSpeed: { value: 0.75 },
 
         uSmallWavesElevation: { value: 0.176 },
@@ -97,10 +97,7 @@ gui.add(waterMaterial.uniforms.uColorMultiplier, 'value').min(0).max(10).step(0.
 // Mesh
 const water = new THREE.Mesh(waterGeometry, waterMaterial)
 water.rotation.x = - Math.PI * 0.5
-water.rotation.z = - Math.PI * 0.25
-water.position.y = - 0.5
-water.position.x = - 1
-water.position.z = - 1
+water.rotation.z = - Math.PI * 1
 scene.add(water)
 
 //light
@@ -142,8 +139,8 @@ window.addEventListener('resize', () =>
  * Camera
  */
 // Base camera
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.set(1, 1, 1)
+const camera = new THREE.PerspectiveCamera(90, sizes.width / sizes.height, 0.1)
+camera.position.set(0, 1, 10)
 scene.add(camera)
 
 // Controls
@@ -169,12 +166,13 @@ const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
 
-    // if (ship) {
-    //     ship.scene.position.x -= 0.1;
-    //     if (ship.scene.position.x < 14){
-    //         ship.scene.position.x = 17
-    //     }
-    // }
+    //Ship Moving
+    if (ship) {
+        ship.scene.position.x -= 0.01;
+        if (ship.scene.position.x < -25){
+            ship.scene.position.x = 7.5
+        }
+    }
 
     // Water
     waterMaterial.uniforms.uTime.value = elapsedTime
