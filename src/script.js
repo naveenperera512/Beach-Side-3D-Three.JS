@@ -5,6 +5,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import * as dat from 'dat.gui'
 import waterVertexShader from './shaders/water/vertex.glsl'
 import waterFragmentShader from './shaders/water/fragment.glsl'
+import gsap from 'gsap'
 
 /**
  * Base
@@ -25,7 +26,7 @@ const gltfLoader = new GLTFLoader()
  * Water
  */
 // Geometry
-const waterGeometry = new THREE.PlaneGeometry(35, 20, 512, 512)
+const waterGeometry = new THREE.PlaneGeometry(80, 25, 512, 512)
 
 //Ship Model
 let ship = null
@@ -37,26 +38,20 @@ gltfLoader.load(
         ship = gltf
         gltf.scene.scale.set(0.02, 0.02, 0.02)
         gltf.scene.position.z = -6
-        gltf.scene.position.x = 12
+        gltf.scene.position.x = 18
         gltf.scene.rotation.y = -1.6
         scene.add(gltf.scene)   
     }
 )
 
-//Sun Light
-// const geometry = new THREE.CircleGeometry (1, 32 );
-// const material = new THREE.MeshBasicMaterial( { color: '#FB8F03' } )
-// const mesh = new THREE.Mesh( geometry, material );
-// scene.add( mesh );
-
-// Colors
+// Water Colors
 debugObject.depthColor = '#186691'
 debugObject.surfaceColor = '#9bd8ff'
 
 gui.addColor(debugObject, 'depthColor').onChange(() => { waterMaterial.uniforms.uDepthColor.value.set(debugObject.depthColor) })
 gui.addColor(debugObject, 'surfaceColor').onChange(() => { waterMaterial.uniforms.uSurfaceColor.value.set(debugObject.surfaceColor) })
 
-// Material
+// Water Material
 const waterMaterial = new THREE.ShaderMaterial({
     vertexShader: waterVertexShader,
     fragmentShader: waterFragmentShader,
@@ -65,11 +60,11 @@ const waterMaterial = new THREE.ShaderMaterial({
         uTime: { value: 0 },
         
         uBigWavesElevation: { value: 0.083 },
-        uBigWavesFrequency: { value: new THREE.Vector2(1.318, 2.526) },
+        uBigWavesFrequency: { value: new THREE.Vector2(0.756, 1.526) },
         uBigWavesSpeed: { value: 0.75 },
 
-        uSmallWavesElevation: { value: 0.176 },
-        uSmallWavesFrequency: { value: 3.2 },
+        uSmallWavesElevation: { value: 0.23 },
+        uSmallWavesFrequency: { value: 2.267 },
         uSmallWavesSpeed: { value: 0.2 },
         uSmallIterations: { value: 4 },
 
@@ -94,11 +89,30 @@ gui.add(waterMaterial.uniforms.uSmallIterations, 'value').min(0).max(5).step(1).
 gui.add(waterMaterial.uniforms.uColorOffset, 'value').min(0).max(1).step(0.001).name('uColorOffset')
 gui.add(waterMaterial.uniforms.uColorMultiplier, 'value').min(0).max(10).step(0.001).name('uColorMultiplier')
 
-// Mesh
+// Water Mesh
 const water = new THREE.Mesh(waterGeometry, waterMaterial)
 water.rotation.x = - Math.PI * 0.5
 water.rotation.z = - Math.PI * 1
 scene.add(water)
+
+//Sphere Texture
+const image = new Image()
+const texture = new THREE.Texture(image)
+
+image.onload = () =>
+{
+    texture.needsUpdate = true
+}
+
+image.src = '/textures/sun/sun2.jfif'
+
+//Sphere
+const geometry = new THREE.SphereGeometry(4, 50, 50)
+const material = new THREE.MeshBasicMaterial({ map: texture })
+const mesh = new THREE.Mesh(geometry, material)
+mesh.position.z = -30
+mesh.position.y = 25
+scene.add(mesh)
 
 //light
 const directionalLight = new THREE.PointLight(0xffffff, 4.5)
@@ -151,7 +165,8 @@ controls.enableDamping = true
  * Renderer
  */
 const renderer = new THREE.WebGLRenderer({
-    canvas: canvas
+    canvas: canvas,
+    antialias: true
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -161,6 +176,8 @@ renderer.setClearColor(debugObject.clearColor)
  * Animate
  */
 const clock = new THREE.Clock()
+
+gsap.to(mesh.position, { duration: 200, y: -5 })
 
 const tick = () =>
 {
@@ -176,6 +193,9 @@ const tick = () =>
 
     // Water
     waterMaterial.uniforms.uTime.value = elapsedTime
+
+    //Sun Rotation
+    mesh.rotation.y += 0.002
 
     // Update controls
     controls.update()
