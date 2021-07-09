@@ -37,10 +37,39 @@ gltfLoader.load(
     {
         ship = gltf
         gltf.scene.scale.set(0.02, 0.02, 0.02)
-        gltf.scene.position.z = -6
-        gltf.scene.position.x = 18
+        gltf.scene.position.z = -5
+        gltf.scene.position.x = -18
+        gltf.scene.rotation.y = 1.6
+        scene.add(gltf.scene)   
+    }
+)
+
+//Boat Model
+let boat = null
+
+gltfLoader.load(
+    '/models/boat/scene.gltf',
+    (gltf) =>
+    {
+        boat = gltf
+        gltf.scene.scale.set(0.004, 0.004, 0.004)
+        gltf.scene.position.z = -7
+        gltf.scene.position.x = 12
         gltf.scene.rotation.y = -1.6
         scene.add(gltf.scene)   
+    }
+)
+
+//Coconut
+let coconut = null
+
+gltfLoader.load(
+    '/models/coconut/scene.gltf',
+    (gltf) =>
+    {
+        coconut = gltf
+        gltf.scene.scale.set(0.5, 0.5, 0.5)
+        scene.add(gltf.scene)
     }
 )
 
@@ -185,11 +214,20 @@ const tick = () =>
 
     //Ship Moving
     if (ship) {
-        ship.scene.position.x -= 0.01;
+        ship.scene.position.x -= -0.009;
         if (ship.scene.position.x < -25){
-            ship.scene.position.x = 7.5
+            ship.scene.position.x = -7.5
         }
     }
+
+    //Boat Moving
+    if (boat) {
+        boat.scene.position.x -= 0.009;
+        if (boat.scene.position.x < -25){
+            boat.scene.position.x = -7.5
+        }
+    }
+
 
     // Water
     waterMaterial.uniforms.uTime.value = elapsedTime
