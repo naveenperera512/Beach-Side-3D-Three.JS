@@ -36,10 +36,14 @@ gltfLoader.load(
     (gltf) =>
     {
         ship = gltf
-        gltf.scene.scale.set(0.02, 0.02, 0.02)
+        gltf.scene.scale.set(0.025, 0.025, 0.025)
         gltf.scene.position.z = -5
-        gltf.scene.position.x = 18
+        gltf.scene.position.x = 13
         gltf.scene.rotation.y = -1.6
+        gltf.scene.receiveShadow = true
+        gltf.scene.traverse( function( node ) {
+            if ( node.isMesh ) { node.receiveShadow = true; }
+        } );
         scene.add(gltf.scene)   
     }
 )
@@ -61,29 +65,41 @@ gltfLoader.load(
 // )
 
 //Coconut
+let coconut = null
 
 gltfLoader.load(
     '/models/coconut/scene.gltf',
     (gltf) =>
     {
+        coconut = gltf
         gltf.scene.scale.set(0.0013, 0.0013, 0.0013)
         gltf.scene.position.x = -2
         gltf.scene.position.z = 9.25
         gltf.scene.rotation.z = -0.7
+        gltf.scene.receiveShadow = true
+        gltf.scene.traverse( function( node ) {
+            if ( node.isMesh ) { node.receiveShadow = true; }
+        } );
         scene.add(gltf.scene)
     }
 )
 
 //Coconut2
+let coconut2 = null
 
 gltfLoader.load(
     '/models/coconut2/scene.gltf',
     (gltf) =>
     {
-        gltf.scene.scale.set(0.0013, 0.0013, 0.0013)
+        coconut2 = gltf
+        gltf.scene.scale.set(0.0012, 0.0012, 0.0012)
         gltf.scene.position.x = 2
         gltf.scene.position.z = 9.25
         gltf.scene.rotation.z = 0.7
+        gltf.scene.receiveShadow = true
+        gltf.scene.traverse( function( node ) {
+            if ( node.isMesh ) { node.receiveShadow = true; }
+        } );
         scene.add(gltf.scene)
     }
 )
@@ -93,8 +109,8 @@ gltfLoader.load(
 debugObject.depthColor = '#186691'
 debugObject.surfaceColor = '#9bd8ff'
 
-gui.addColor(debugObject, 'depthColor').onChange(() => { waterMaterial.uniforms.uDepthColor.value.set(debugObject.depthColor) })
-gui.addColor(debugObject, 'surfaceColor').onChange(() => { waterMaterial.uniforms.uSurfaceColor.value.set(debugObject.surfaceColor) })
+// gui.addColor(debugObject, 'depthColor').onChange(() => { waterMaterial.uniforms.uDepthColor.value.set(debugObject.depthColor) })
+// gui.addColor(debugObject, 'surfaceColor').onChange(() => { waterMaterial.uniforms.uSurfaceColor.value.set(debugObject.surfaceColor) })
 
 // Water Material
 const waterMaterial = new THREE.ShaderMaterial({
@@ -115,29 +131,33 @@ const waterMaterial = new THREE.ShaderMaterial({
 
         uDepthColor: { value: new THREE.Color(debugObject.depthColor) },
         uSurfaceColor: { value: new THREE.Color(debugObject.surfaceColor) },
-        uColorOffset: { value: 0.091 },
+        uColorOffset: { value: 0.020 },
         uColorMultiplier: { value: 5.76 }
     }
 })
 
-gui.add(waterMaterial.uniforms.uBigWavesElevation, 'value').min(0).max(1).step(0.001).name('uBigWavesElevation')
-gui.add(waterMaterial.uniforms.uBigWavesFrequency.value, 'x').min(0).max(10).step(0.001).name('uBigWavesFrequencyX')
-gui.add(waterMaterial.uniforms.uBigWavesFrequency.value, 'y').min(0).max(10).step(0.001).name('uBigWavesFrequencyY')
-gui.add(waterMaterial.uniforms.uBigWavesSpeed, 'value').min(0).max(4).step(0.001).name('uBigWavesSpeed')
+// gui.add(waterMaterial.uniforms.uBigWavesElevation, 'value').min(0).max(1).step(0.001).name('uBigWavesElevation')
+// gui.add(waterMaterial.uniforms.uBigWavesFrequency.value, 'x').min(0).max(10).step(0.001).name('uBigWavesFrequencyX')
+// gui.add(waterMaterial.uniforms.uBigWavesFrequency.value, 'y').min(0).max(10).step(0.001).name('uBigWavesFrequencyY')
+// gui.add(waterMaterial.uniforms.uBigWavesSpeed, 'value').min(0).max(4).step(0.001).name('uBigWavesSpeed')
 
 
-gui.add(waterMaterial.uniforms.uSmallWavesElevation, 'value').min(0).max(1).step(0.001).name('uSmallWavesElevation')
-gui.add(waterMaterial.uniforms.uSmallWavesFrequency, 'value').min(0).max(30).step(0.001).name('uSmallWavesFrequency')
-gui.add(waterMaterial.uniforms.uSmallWavesSpeed, 'value').min(0).max(4).step(0.001).name('uSmallWavesSpeed')
-gui.add(waterMaterial.uniforms.uSmallIterations, 'value').min(0).max(5).step(1).name('uSmallIterations')
+// gui.add(waterMaterial.uniforms.uSmallWavesElevation, 'value').min(0).max(1).step(0.001).name('uSmallWavesElevation')
+// gui.add(waterMaterial.uniforms.uSmallWavesFrequency, 'value').min(0).max(30).step(0.001).name('uSmallWavesFrequency')
+// gui.add(waterMaterial.uniforms.uSmallWavesSpeed, 'value').min(0).max(4).step(0.001).name('uSmallWavesSpeed')
+// gui.add(waterMaterial.uniforms.uSmallIterations, 'value').min(0).max(5).step(1).name('uSmallIterations')
 
-gui.add(waterMaterial.uniforms.uColorOffset, 'value').min(0).max(1).step(0.001).name('uColorOffset')
-gui.add(waterMaterial.uniforms.uColorMultiplier, 'value').min(0).max(10).step(0.001).name('uColorMultiplier')
+// gui.add(waterMaterial.uniforms.uColorOffset, 'value').min(0).max(1).step(0.001).name('uColorOffset')
+// gui.add(waterMaterial.uniforms.uColorMultiplier, 'value').min(0).max(10).step(0.001).name('uColorMultiplier')
 
 // Water Mesh
 const water = new THREE.Mesh(waterGeometry, waterMaterial)
 water.rotation.x = - Math.PI * 0.5
 water.rotation.z = - Math.PI * 1
+scene.receiveShadow = true
+        scene.traverse( function( node ) {
+            if ( node.isMesh ) { node.receiveShadow = true; }
+        } );
 scene.add(water)
 
 //Sphere Texture
@@ -149,7 +169,7 @@ image.onload = () =>
     texture.needsUpdate = true
 }
 
-image.src = '/textures/sun/sun2.jfif'
+image.src = '/textures/moon/moon.jpg'
 
 //Sphere
 const geometry = new THREE.SphereGeometry(4, 50, 50)
@@ -160,7 +180,7 @@ mesh.position.y = 20
 scene.add(mesh)
 
 //light
-const directionalLight = new THREE.PointLight(0xffffff, 4.5)
+const directionalLight = new THREE.PointLight(0xffffff, 20)
 directionalLight.castShadow = true
 directionalLight.shadow.mapSize.set(1024, 1024)
 directionalLight.shadow.camera.far = 60
@@ -168,7 +188,7 @@ directionalLight.shadow.camera.left = -10
 directionalLight.shadow.camera.top = 10
 directionalLight.shadow.camera.right = 10
 directionalLight.shadow.camera.bottom = -10
-directionalLight.position.set(0, 10, 35)
+directionalLight.position.set(0, 10, -35)
 scene.add(directionalLight)
 
 /**
@@ -213,6 +233,8 @@ const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
     antialias: true
 })
+renderer.shadowMap.enabled = true
+renderer.shadowMap.type = THREE.PCFSoftShadowMap
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 debugObject.clearColor = '#121C24'
@@ -222,7 +244,7 @@ renderer.setClearColor(debugObject.clearColor)
  */
 const clock = new THREE.Clock()
 
-gsap.to(mesh.position, { duration: 200, y: -5 })
+gsap.to(mesh.position, { duration: 200, y: -4 })
 
 const tick = () =>
 {
@@ -231,8 +253,8 @@ const tick = () =>
     //Ship Moving
     if (ship) {
         ship.scene.position.x -= 0.009;
-        if (ship.scene.position.x < -25){
-            ship.scene.position.x = -7.5
+        if (ship.scene.position.x < -13){
+            ship.scene.position.x = 13
         }
     }
 
@@ -243,6 +265,22 @@ const tick = () =>
     //         boat.scene.position.x = -7.5
     //     }
     // }
+
+    //Coconut Moving
+    if (coconut) {
+        coconut.scene.rotation.z -= 0.00025;
+        if (coconut.scene.rotation.z < -0.75){
+            coconut.scene.rotation.z = -0.7
+        }
+    }
+
+    //Coconut2 Moving
+    if (coconut2) {
+        coconut2.scene.rotation.z -= 0.00025;
+        if (coconut2.scene.rotation.z < 0.7){
+            coconut2.scene.rotation.z = 0.75
+        }
+    }
 
 
     // Water
