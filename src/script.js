@@ -179,6 +179,33 @@ mesh.position.z = -30
 mesh.position.y = 20
 scene.add(mesh)
 
+//Star
+const starGeometry = new THREE.BufferGeometry()
+const starMaterial = new THREE.PointsMaterial({
+    color: 0xffffff
+})
+
+const starVertices = []
+for (let i = 0; i < 10000; i++)
+{
+    const x = (Math.random() - 0.5) * 5000
+    const y = (Math.random() - 0.5) * 5000
+    const z = -Math.random() * 1000
+    starVertices.push(x, y, z)
+}
+
+console.log(starVertices)
+
+starGeometry.setAttribute(
+    'position',
+    new THREE.Float32BufferAttribute(
+        starVertices, 3)
+)
+
+const stars = new THREE.Points(
+    starGeometry, starMaterial)
+    scene.add(stars)
+
 //light
 const directionalLight = new THREE.PointLight(0xffffff, 20)
 directionalLight.castShadow = true
